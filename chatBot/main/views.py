@@ -4,9 +4,9 @@ from rest_framework.response import Response
 from bardapi import BardCookies
 import requests
 
-psid = ""
-psidts = ""
-psidcc = ""
+psid = "ewhi7-YV_AAxa1Um0B7YNBpK_pHzMRRyyWTl0eFim914qZuN-qwYyjjNOnQDqhziAEMRjQ."
+psidts = "sidts-CjEBPVxjSqob-1RIOgvtm-kPwI931pW6mfrH9oC9ISObChi8HGfsHDX40eBEfwAGJrpzEAA"
+psidcc = "ABTWhQEvmBXNB8QXavuzP2zYFr2A1K6fnp72aoH-Uck4uT4jw3rU6G1ASWkwqsquOi86CPNs_Fw"
 #cria um conjunto com os tokens de autenticação
 #para poder usar o Bard
 tokenCookies = {
