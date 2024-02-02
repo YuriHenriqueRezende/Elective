@@ -28,9 +28,12 @@ class ChatBotAPIView(APIView):
         print(data['question'])
 
         conversationId = data.get('conversationId')
+
         if(conversationId is not None):
             bard.conversation_id = conversationId
-
+        else:
+            bard.conversation_id = None
+    
         answer = bard.get_answer(data['question'])
 
         return Response(status=201,data=answer)
