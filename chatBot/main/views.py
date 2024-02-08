@@ -2,11 +2,14 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from bardapi import BardCookies
-import requests
+import requests, json
+
+mockEnagle = True
+mockedAnswer = '{"content": "vai sao paulo", "contentId": "323rufu3rhf"}'
 
 psid = "g.a000gAhi7_OaUqP_N3Z6QpnPhlHA5SkkALsRUZGSakMVeTeTDWCWJtzvC1bCtF17fg8vhAOr4QACgYKAYYSAQASFQHGX2MiOj5L3NEcThm17D_TQoXtDhoVAUF8yKragEjbHjK_fD4b9HaSQ9-W0076"
 psidts = "sidts-CjEBPVxjSvErkxsCA83_yBbIOEop70pouKGNSWK9BO5U3xqARtF3kiPrcBQYrbR3ACCGEAA"
-psidcc = "ABTWhQGJDwiWbZJ3mxb7VtAE5pcxkyEfkkJn_sunibUoQbQ9_cARnpW5lOL53Opv-44kCgn9lV8"
+psidcc = "ABTWhQHcDYC65HCZ2DhFtfHjkyCsuhXR31fDdCCOp0JFU1C2Fj4JtzqkxMFYAKaZoOTui2UpFrs"
 #cria um conjunto com os tokens de autenticação
 #para poder usar o Bard
 tokenCookies = {
@@ -15,13 +18,18 @@ tokenCookies = {
     "__Secure-1PSIDCC": psidcc, 
 }
 #cria o objeto bard para ser usado
-bard = BardCookies(cookie_dict=tokenCookies)
 
 #define as ações da API para receber
 #os comandos a ser passado para o Bard
 class ChatBotAPIView(APIView):
     def post(self, request):
+        if mockEnagle == True:
+             return Response(status=201,data=json.loads(mockedAnswer))
+            
         #pega os dados que veio na requisição
+
+        bard = BardCookies(cookie_dict=tokenCookies)
+
         data = request.data
 
         print("data received:")
