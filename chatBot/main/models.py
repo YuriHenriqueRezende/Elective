@@ -107,3 +107,23 @@ class Availability(models.Model):
 
     def __str__(self):
         return self.tripFK.title + '-' + str(self.date)
+
+class ConversationHistory(models.Model):
+    date = models.DateField(auto_now_add=True)
+    user = models.ForeignKey(user, reelated_name='userHistory', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.user.email
+    
+CONVERSATION_TYPE = [
+    ("Q", "question"),
+    ("A", "Answer")
+]
+
+class Conversation(models.Model):
+    type = models.CharFied(max_length=10, choices=CONVERSATION_TYPE)
+    massage = models.DateField(auto_now_add=True)
+    history = models.ForeignKey(ConversationHistory,related_name="history",  on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.user.email
