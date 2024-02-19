@@ -1,0 +1,32 @@
+{
+    "intents": [
+        {
+            "tag": "cumprimento",
+            "patterns": [
+                "oi",
+                "Ola",
+                "Como vai"
+            ],
+            "responses": [
+                "Ola, sou o assistente atil",
+                "Ei no que eu posso ser util"
+            ],
+            "required": "\n digite alguma coisa",
+            "command":  "LIST_TRIPS"
+        },
+        {
+            "tag": "LISTAR",
+            "patterns": [
+                "OPÇOES",
+                "VIAGENS",
+                "SEI LA"
+            ],
+            "responses": [
+                "OK, AQUI ESTA ALGUMAS NOSSAS OPÇÕES",
+                "NOSSAS OPÇÕES"
+            ],
+            "required": "\n OU SE PREFIRIR digite O DESTINO",
+            "command":  "LIST_TRIPS" 
+        }
+    ]
+}
