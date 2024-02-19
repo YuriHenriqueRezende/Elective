@@ -110,7 +110,7 @@ class Availability(models.Model):
 
 class ConversationHistory(models.Model):
     date = models.DateField(auto_now_add=True)
-    user = models.ForeignKey(user, reelated_name='userHistory', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_name='userHistory', on_delete=models.CASCADE)
 
     def __str__(self):
         return self.user.email
@@ -121,9 +121,9 @@ CONVERSATION_TYPE = [
 ]
 
 class Conversation(models.Model):
-    type = models.CharFied(max_length=10, choices=CONVERSATION_TYPE)
-    massage = models.DateField(auto_now_add=True)
+    type = models.CharField(max_length=10, choices=CONVERSATION_TYPE)
+    massage = models.DateTimeField(auto_now_add=True)
     history = models.ForeignKey(ConversationHistory,related_name="history",  on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.user.email
+        return self.type

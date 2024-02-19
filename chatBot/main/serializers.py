@@ -52,3 +52,18 @@ class AvailabilitySerializer(serializers.ModelSerializer):
         fields = '__all__'
         many = True
 
+class ConversationHistorySerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+    class Meta:
+        model = ConversationHistory
+        fields = '__all__'
+        many = True
+
+class ConversationSerializer(serializers.ModelSerializer):
+    user = ConversationHistorySerializer(read_only=True)
+    class Meta:
+        model = Conversation
+        fields = '__all__'
+        many = True
+
+

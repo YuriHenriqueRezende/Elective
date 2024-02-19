@@ -142,7 +142,27 @@ class AvailabilityView(CustomModelViewSet):
 class ChatBotAPIView(APIView):
     def post(self, request):
         data = request.data
-        question = data.get('question')      
+        question = data.get('question')
+        ConversationId = data.get('conversationId')
+        userId = data.get('userId')    
+
+        userFound = None
+        try:
+            userFound = User.objects.get(pk=userId)
+        except ObjectDoesNotExit:
+            return JsonResponse(status=500,data={'corrent': "USUARIO NAO ENCONTRADO"})
+        
+        Conversationfound = None
+        if ConversationId is None:
+            newHistory = ConversationHistory(user=userFound)
+            newHistory.save()
+            Conversationfound = newHistory
+
+
+        try:
+            Conversationfound = ConversationHistory.objects.get(pk=ConversationId)
+        except ObjectDoesNotExit:
+            return JsonResponse(status=500,data={'corrent': "USUARIO NAO ENCONTRADO"})
 
         answer = chat.get_response(question)
                
