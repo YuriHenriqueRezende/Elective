@@ -163,8 +163,16 @@ class ChatBotAPIView(APIView):
             Conversationfound = ConversationHistory.objects.get(pk=ConversationId)
         except ObjectDoesNotExit:
             return JsonResponse(status=500,data={'corrent': "USUARIO NAO ENCONTRADO"})
+        
+        newQuestion = Conversation(type="Q",message=question,history=Conversationfound)
+        newQuestion.save()
 
         answer = chat.get_response(question)
-               
+
+        newQuestion = Conversation(type="A",message=answer.message,history=Conversationfound)
+        newQuestion.save()
+
+        serializerdAnwer = ConversationSerializer(newAnwer,many=False)
+
         return JsonResponse(status=201, data={'content': answer.message})
 
