@@ -139,6 +139,12 @@ class AvailabilityView(CustomModelViewSet):
     ordering_fields = '__all__' 
     # permission_classes = (DjangoModelPermissionsOrAnonReadOnly,)  
 
+def convertToMessage(data, attritbuteName):
+    Response = ' \n '
+    for dt in data:
+        Response += getattr(dt,attritbuteName,None)
+        index += 1
+    return Response 
 
 class ChatBotAPIView(APIView):
     def post(self, request):
@@ -173,10 +179,11 @@ class ChatBotAPIView(APIView):
         
         #chama a I.A.
         answer = chat.get_response(question)
+        finalMessage = answer.message
 
         if answer.command == "LIST_TRIPS":
             trips = Trip.objects.all()
-            convertToMessage(trips,'title')
+            finalMessage = convertToMessage(trips,'title')
 
         newAnswer = Conversation(type="A",message=answer.message if answer.additionalMessage is None else answer.message + '\n' + answer.additionalMessage, history=conversationFound)
         newAnswer.save()
