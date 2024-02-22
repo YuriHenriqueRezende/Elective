@@ -14,6 +14,7 @@ from django.db.models import Avg
 
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAdminUser, IsAuthenticated, DjangoModelPermissionsOrAnonReadOnly
 
+from django.core.exceptions import ObjectDoesNotExist
 from ai import train, chat
 from django.http import JsonResponse
 
@@ -173,7 +174,11 @@ class ChatBotAPIView(APIView):
         #chama a I.A.
         answer = chat.get_response(question)
 
-        newAnswer = Conversation(type="A",message=answer.message,history=conversationFound)
+        if answer.command == "LIST_TRIPS":
+            trips = Trip.objects.all()
+            convertToMessage(trips,'title')
+
+        newAnswer = Conversation(type="A",message=answer.message if answer.additionalMessage is None else answer.message + '\n' + answer.additionalMessage, history=conversationFound)
         newAnswer.save()
         
         serializedAnswer = ConversationSerializer(newAnswer,many=False)

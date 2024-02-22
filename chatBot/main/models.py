@@ -111,6 +111,7 @@ class Availability(models.Model):
 class ConversationHistory(models.Model):
     date = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(User,related_name='userHistory',on_delete=models.CASCADE)
+    lastCommand = models.CharField(max_length=30, blank=True, null=True)
     
     def __str__(self):
         return self.user.email
