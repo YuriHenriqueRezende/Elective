@@ -143,36 +143,40 @@ class ChatBotAPIView(APIView):
     def post(self, request):
         data = request.data
         question = data.get('question')
-        ConversationId = data.get('conversationId')
-        userId = data.get('userId')    
-
+        conversationId = data.get('conversationId')
+        userId = data.get('userId')
+        
         userFound = None
         try:
             userFound = User.objects.get(pk=userId)
-        except ObjectDoesNotExit:
-            return JsonResponse(status=500,data={'corrent': "USUARIO NAO ENCONTRADO"})
-        
-        Conversationfound = None
-        if ConversationId is None:
+        except ObjectDoesNotExist:
+            return JsonResponse(status=500,data={'content': 'Usuário não encontrado!'})
+
+        conversationFound = None
+
+        #nova conversa!
+        if conversationId is None:
             newHistory = ConversationHistory(user=userFound)
             newHistory.save()
-            Conversationfound = newHistory
+            conversationFound = newHistory
+        #contexto de uma conversa já existente (front enviou o conversationId)
+        else:
+            try:
+                conversationFound = ConversationHistory.objects.get(pk=conversationId)
+            except ObjectDoesNotExist:
+                return JsonResponse(status=500,data={'content': 'Conversa não encontrada!'})
 
-
-        try:
-            Conversationfound = ConversationHistory.objects.get(pk=ConversationId)
-        except ObjectDoesNotExit:
-            return JsonResponse(status=500,data={'corrent': "USUARIO NAO ENCONTRADO"})
-        
-        newQuestion = Conversation(type="Q",message=question,history=Conversationfound)
+        #salva a pergunta no banco, linkando com o histórico
+        newQuestion = Conversation(type="Q",message=question,history=conversationFound)
         newQuestion.save()
-
+        
+        #chama a I.A.
         answer = chat.get_response(question)
 
-        newQuestion = Conversation(type="A",message=answer.message,history=Conversationfound)
-        newQuestion.save()
-
-        serializerdAnwer = ConversationSerializer(newAnwer,many=False)
-
-        return JsonResponse(status=201, data={'content': answer.message})
+        newAnswer = Conversation(type="A",message=answer.message,history=conversationFound)
+        newAnswer.save()
+        
+        serializedAnswer = ConversationSerializer(newAnswer,many=False)
+               
+        return JsonResponse(status=201, data=serializedAnswer.data)
 

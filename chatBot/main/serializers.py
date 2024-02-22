@@ -60,10 +60,8 @@ class ConversationHistorySerializer(serializers.ModelSerializer):
         many = True
 
 class ConversationSerializer(serializers.ModelSerializer):
-    user = ConversationHistorySerializer(read_only=True)
+    history = ConversationHistorySerializer(read_only=True)
     class Meta:
         model = Conversation
         fields = '__all__'
         many = True
-
-

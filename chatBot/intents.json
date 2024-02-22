@@ -3,30 +3,33 @@
         {
             "tag": "cumprimento",
             "patterns": [
-                "oi",
-                "Ola",
-                "Como vai"
+                "Oi",
+                "Olá",
+                "Como vai?"
             ],
             "responses": [
-                "Ola, sou o assistente atil",
-                "Ei no que eu posso ser util"
+                "Olá, sou o assistente talllll, como posso te ajudar?",
+                "Oi, no que posso ser útil?"
             ],
-            "required": "\n digite alguma coisa",
-            "command":  "LIST_TRIPS"
+            "required": "\n Ou se preferir digite alguma dessas opções: -Listar viagens, -Pagamentos, -Minhas Reservas"            
         },
         {
-            "tag": "LISTAR",
+            "tag": "listar",
             "patterns": [
-                "OPÇOES",
-                "VIAGENS",
-                "SEI LA"
+                "Listar viagens",
+                "Opções de viagens",
+                "Quais as viagens disponíveis?",
+                "viagens?",
+                "viagem",
+                "opções"
             ],
             "responses": [
-                "OK, AQUI ESTA ALGUMAS NOSSAS OPÇÕES",
-                "NOSSAS OPÇÕES"
+                "Ok, aqui está alguma de nossas opções!",
+                "Certo, já vou te informar nossas ofertas!"
             ],
-            "required": "\n OU SE PREFIRIR digite O DESTINO",
-            "command":  "LIST_TRIPS" 
+            "required": "\n Ou se preferir digite o destino desejado!",
+            "command": "LIST_TRIPS"
         }
+        
     ]
 }
