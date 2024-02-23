@@ -10,13 +10,14 @@ from datetime import timedelta, datetime
 from django_filters.rest_framework import DjangoFilterBackend
 from .customFilters import *
 from rest_framework import filters
-from django.db.models import Avg
+from django.db.models import Avg, Q
 
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAdminUser, IsAuthenticated, DjangoModelPermissionsOrAnonReadOnly
 
-from django.core.exceptions import ObjectDoesNotExist
 from ai import train, chat
 from django.http import JsonResponse
+
+from django.core.exceptions import ObjectDoesNotExist
 
 def strToDate(strDate):
     return datetime.strptime(strDate, '%Y-%m-%d').date()
@@ -139,13 +140,14 @@ class AvailabilityView(CustomModelViewSet):
     ordering_fields = '__all__' 
     # permission_classes = (DjangoModelPermissionsOrAnonReadOnly,)  
 
-def convertToMessage(data, attritbuteName):
+
+def convertToMessage(data,attributeName):
     index = 1
-    Response = ' \n '
+    response = ' \n '
     for dt in data:
-        Response += getattr(dt,attritbuteName,None)
+        response += str(index) + '- ' + getattr(dt,attributeName,None) + ' \n '
         index += 1
-    return Response 
+    return response
 
 class ChatBotAPIView(APIView):
     def post(self, request):
@@ -155,6 +157,7 @@ class ChatBotAPIView(APIView):
         userId = data.get('userId')
         
         userFound = None
+        #checa se o usuário existe
         try:
             userFound = User.objects.get(pk=userId)
         except ObjectDoesNotExist:
@@ -168,6 +171,7 @@ class ChatBotAPIView(APIView):
             newHistory.save()
             conversationFound = newHistory
         #contexto de uma conversa já existente (front enviou o conversationId)
+        #checa se a conversa existe
         else:
             try:
                 conversationFound = ConversationHistory.objects.get(pk=conversationId)
@@ -182,14 +186,27 @@ class ChatBotAPIView(APIView):
         answer = chat.get_response(question)
         finalMessage = answer.message
 
-        if answer.command == "LIST_TRIPS":
+        newAnswer = None
+        if conversationFound.lastCommand == 'SEARCH_TRIP':
+            trips = Trip.objects.filter(Q(title__icontains=question) | Q(description__icontains=question) | Q(city__icontains=question))
+            if trips.exists():
+                finalMessage = convertToMessage(trips,'title')
+            else:                
+                finalMessage = 'Infelizmente não encontramos a viagem que procura =/'
+            newAnswer = Conversation(type="A",message=finalMessage,history=conversationFound)
+
+        elif answer.command == 'LIST_TRIPS':
             trips = Trip.objects.all()
             finalMessage += convertToMessage(trips,'title')
-
-        newAnswer = Conversation(type="A",message=finalMessage if answer.additionalMessage is None else finalMessage + '\n' + answer.additionalMessage, history=conversationFound)
+            newAnswer = Conversation(type="A",message=finalMessage if answer.additionalMessage is None else finalMessage + '\n' + answer.additionalMessage ,history=conversationFound)
+        else:
+            #atualiza o último comando interpretado pela I.A.
+            conversationFound.lastCommand = answer.command
+            conversationFound.save()
+            newAnswer = Conversation(type="A",message=finalMessage if answer.additionalMessage is None else finalMessage + '\n' + answer.additionalMessage ,history=conversationFound)
+        
         newAnswer.save()
         
         serializedAnswer = ConversationSerializer(newAnswer,many=False)
                
         return JsonResponse(status=201, data=serializedAnswer.data)
-
