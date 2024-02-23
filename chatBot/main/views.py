@@ -140,6 +140,7 @@ class AvailabilityView(CustomModelViewSet):
     # permission_classes = (DjangoModelPermissionsOrAnonReadOnly,)  
 
 def convertToMessage(data, attritbuteName):
+    index = 1
     Response = ' \n '
     for dt in data:
         Response += getattr(dt,attritbuteName,None)
@@ -183,9 +184,9 @@ class ChatBotAPIView(APIView):
 
         if answer.command == "LIST_TRIPS":
             trips = Trip.objects.all()
-            finalMessage = convertToMessage(trips,'title')
+            finalMessage += convertToMessage(trips,'title')
 
-        newAnswer = Conversation(type="A",message=answer.message if answer.additionalMessage is None else answer.message + '\n' + answer.additionalMessage, history=conversationFound)
+        newAnswer = Conversation(type="A",message=finalMessage if answer.additionalMessage is None else finalMessage + '\n' + answer.additionalMessage, history=conversationFound)
         newAnswer.save()
         
         serializedAnswer = ConversationSerializer(newAnswer,many=False)
