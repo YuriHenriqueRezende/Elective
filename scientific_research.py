@@ -1,44 +1,39 @@
 import tkinter as tk
 
-class AnimacaoTextoTkinter:
-    def __init__(self, root):
-        self.root = root
-        self.root.title("Animação de Texto Tkinter")
+class JanelaPrincipal(tk.Tk):
+    def __init__(self):
+        super().__init__()
+        self.title("Janela Principal")
+        self.geometry("300x200")
 
-        # Configurações da janela
-        self.largura = 400
-        self.altura = 200
-        self.canvas = tk.Canvas(root, width=self.largura, height=self.altura)
-        self.canvas.pack()
+        self.botao_abrir = tk.Button(self, text="Abrir Nova Janela", command=self.abrir_nova_janela)
+        self.botao_abrir.pack(pady=20)
 
-        # Inicialização da animação
-        self.texto = "Olá, Tkinter!"
-        self.velocidade = 5
-        self.label = self.canvas.create_text(10, self.altura//2, text=self.texto, anchor="w", font=("Arial", 12))
+    def abrir_nova_janela(self):
+        self.withdraw()  # Esconde a janela principal
+        self.nova_janela = JanelaSecundaria(self)
+        self.nova_janela.protocol("WM_DELETE_WINDOW", self.fechar_nova_janela)
 
-        # Inicia o loop de animação
-        self.animar()
+    def fechar_nova_janela(self):
+        self.nova_janela.destroy()
+        self.deiconify()  # Mostra a janela principal
 
-    def animar(self):
-        # Move o texto horizontalmente
-        self.canvas.move(self.label, self.velocidade, 0)
+class JanelaSecundaria(tk.Toplevel):
+    def __init__(self, master):
+        super().__init__(master)
+        self.master = master
+        self.title("Nova Janela")
+        self.geometry("200x100")
+        self.label = tk.Label(self, text="Esta é uma nova janela")
+        self.label.pack(padx=10, pady=10)
 
-        # Obtém as coordenadas atuais do texto
-        posicao = self.canvas.coords(self.label)
+        self.botao_voltar = tk.Button(self, text="Voltar", command=self.voltar_para_janela_principal)
+        self.botao_voltar.pack(pady=10)
 
-        # Verifica se o texto atingiu o meio da janela
-        if posicao[0] >= self.largura / 2:
-            # Interrompe a animação ao atingir o meio
-            return
+    def voltar_para_janela_principal(self):
+        self.destroy()
+        self.master.deiconify()
 
-        # Atualiza a animação após um intervalo de tempo (em milissegundos)
-        self.root.after(30, self.animar)
-
-# Cria a janela principal
-root = tk.Tk()
-
-# Inicializa a animação
-animacao_texto = AnimacaoTextoTkinter(root)
-
-# Inicia o loop principal da interface gráfica
-root.mainloop()
+if __name__ == "__main__":
+    app = JanelaPrincipal()
+    app.mainloop()
