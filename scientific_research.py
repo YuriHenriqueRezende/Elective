@@ -1,39 +1,48 @@
 import tkinter as tk
+from tkinter import ttk
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 
-class JanelaPrincipal(tk.Tk):
-    def __init__(self):
-        super().__init__()
-        self.title("Janela Principal")
-        self.geometry("300x200")
+def plot_grafico():
+    # Desativa temporariamente a interface principal
+    root.attributes('-disabled', True)
 
-        self.botao_abrir = tk.Button(self, text="Abrir Nova Janela", command=self.abrir_nova_janela)
-        self.botao_abrir.pack(pady=20)
+    # Cria uma nova janela para o gráfico
+    grafico_window = tk.Toplevel(root)
+    grafico_window.title('Gráfico')
 
-    def abrir_nova_janela(self):
-        self.withdraw()  # Esconde a janela principal
-        self.nova_janela = JanelaSecundaria(self)
-        self.nova_janela.protocol("WM_DELETE_WINDOW", self.fechar_nova_janela)
+    # Cria um gráfico simples
+    fig, ax = plt.subplots()
+    ax.plot([1, 2, 3], [4, 5, 6])
+    ax.set_title('Exemplo de Gráfico')
 
-    def fechar_nova_janela(self):
-        self.nova_janela.destroy()
-        self.deiconify()  # Mostra a janela principal
+    # Adiciona o gráfico à nova janela
+    canvas = FigureCanvasTkAgg(fig, master=grafico_window)
+    canvas.draw()
+    canvas.get_tk_widget().pack()
 
-class JanelaSecundaria(tk.Toplevel):
-    def __init__(self, master):
-        super().__init__(master)
-        self.master = master
-        self.title("Nova Janela")
-        self.geometry("200x100")
-        self.label = tk.Label(self, text="Esta é uma nova janela")
-        self.label.pack(padx=10, pady=10)
+    # Adiciona a barra de ferramentas de navegação
+    toolbar = NavigationToolbar2Tk(canvas, grafico_window)
+    toolbar.update()
+    canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
 
-        self.botao_voltar = tk.Button(self, text="Voltar", command=self.voltar_para_janela_principal)
-        self.botao_voltar.pack(pady=10)
+    # Função para reativar a interface principal quando a janela do gráfico for fechada
+    def reativar_interface_principal():
+        root.attributes('-disabled', False)
+        grafico_window.destroy()
 
-    def voltar_para_janela_principal(self):
-        self.destroy()
-        self.master.deiconify()
+    # Configura a ação para quando a janela do gráfico for fechada
+    grafico_window.protocol("WM_DELETE_WINDOW", reativar_interface_principal)
 
-if __name__ == "__main__":
-    app = JanelaPrincipal()
-    app.mainloop()
+    # Espera até que a janela do gráfico seja fechada
+    grafico_window.wait_window()
+
+# Cria a janela principal
+root = tk.Tk()
+
+# Botão para plotar o gráfico
+btn_plotar = ttk.Button(root, text='Plotar Gráfico', command=plot_grafico)
+btn_plotar.pack()
+
+# Executa o loop principal da aplicação
+root.mainloop()
