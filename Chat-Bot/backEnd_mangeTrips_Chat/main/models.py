@@ -130,3 +130,9 @@ class Conversation(models.Model):
     def __str__(self):
         return self.type
 
+class ConversationHistory(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    last_command = models.CharField(max_length=100)
+    # Adicione um campo para armazenar o estado atual da conversa
+    conversation_state = models.CharField(max_length=100, default='')
+
